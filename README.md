@@ -10,7 +10,9 @@ backend, no build step, no dependencies.
 - **行程 / Plans** — full day-by-day timeline grouped by Breakfast → Night, with
   weather, booking chips, and hotel for each night
 - **地圖 / Map** — every place across the trip, one tap to open in Google Maps
-- **記帳 / Wallet** — live AUD → HKD converter
+- **記帳 / Wallet** — AUD → HKD converter; pulls the **live spot rate** from
+  Frankfurter (ECB reference rates, free/no-key) and falls back to the saved
+  rate in `data.js` when offline
 - **景點 / Saved** — backup / wishlist spots not yet scheduled
 - Swipeable date pills + progress rail; auto-selects the current day
 

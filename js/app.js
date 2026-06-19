@@ -5,6 +5,48 @@
 const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 const state = { view: "home", day: 0 };
 
+/* live FX rate — starts from the fallback in data.js, upgraded once fetched */
+const rateState = { rate: TRIP.currency.rate, live: false, date: "", loading: false };
+
+/* Pull the spot rate from Frankfurter (ECB reference, free, no key, CORS-ok).
+   Falls back silently to the static rate when offline. */
+async function fetchSpotRate() {
+  if (rateState.loading || rateState.live) return;
+  rateState.loading = true;
+  const { code, target } = TRIP.currency;
+  try {
+    const r = await fetch(`https://api.frankfurter.app/latest?from=${code}&to=${target}`);
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    const v = j.rates && j.rates[target];
+    if (!v) throw new Error("no rate");
+    rateState.rate = v;
+    rateState.date = j.date || "";
+    rateState.live = true;
+  } catch (e) {
+    rateState.live = false; // keep fallback
+  } finally {
+    rateState.loading = false;
+    if (state.view === "wallet") paintRate();
+  }
+}
+
+/* refresh just the wallet numbers without re-rendering the whole view */
+function paintRate() {
+  const sub = $("#rate-sub"), status = $("#rate-status"), inp = $("#aud-in"), out = $("#twd-out");
+  if (!sub) return;
+  const { code, target } = TRIP.currency;
+  sub.textContent = `≈ ${target} · rate 1 ${code} = ${rateState.rate} ${target}`;
+  status.textContent = rateState.live
+    ? `Live spot rate · ${rateState.date}`
+    : (rateState.loading ? "Fetching live rate…" : "Offline — using saved rate.");
+  if (inp && out) {
+    const v = parseFloat(inp.value || 0);
+    out.textContent = isFinite(v)
+      ? "$" + (v * rateState.rate).toLocaleString(undefined, { maximumFractionDigits: 1 }) : "—";
+  }
+}
+
 /* pick the day closest to "today" on first load, else day 0 */
 (function initDay() {
   const today = new Date().toISOString().slice(0, 10);
@@ -177,10 +219,12 @@ function viewWallet() {
       </div>
       <div class="convert-out">
         <div class="big" id="twd-out">—</div>
-        <div class="sub">≈ ${c.target} · rate 1 ${c.code} = ${c.rate} ${c.target}</div>
+        <div class="sub" id="rate-sub">≈ ${c.target} · rate 1 ${c.code} = ${rateState.rate} ${c.target}</div>
       </div>
     </div>
-    <p class="t-note" style="text-align:center">Edit the rate in <b>js/data.js</b> before the trip.</p>`;
+    <p class="t-note" style="text-align:center" id="rate-status">${
+      rateState.live ? "Live spot rate · " + rateState.date : "Tap to fetch the live spot rate."
+    }</p>`;
 }
 
 function viewSaved() {
@@ -216,15 +260,12 @@ function render() {
       state.view = el.dataset.view; render();
     }));
 
-  // wallet live conversion
+  // wallet live conversion + spot-rate fetch
   const inp = $("#aud-in");
   if (inp) {
-    const calc = () => {
-      const v = parseFloat(inp.value || 0);
-      $("#twd-out").textContent = isFinite(v)
-        ? "$" + (v * TRIP.currency.rate).toLocaleString(undefined, { maximumFractionDigits: 1 }) : "—";
-    };
-    inp.addEventListener("input", calc); calc();
+    inp.addEventListener("input", paintRate);
+    paintRate();
+    fetchSpotRate(); // upgrade to the live rate when online
   }
 }
 
