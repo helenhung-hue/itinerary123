@@ -1,0 +1,248 @@
+/* =========================================================================
+   Sydney trip journal — styling
+   Inspired by an elegant cream / serif travel-journal aesthetic.
+   ========================================================================= */
+
+:root {
+  --paper:      #efe7d6;   /* page background        */
+  --card:       #f7f2e7;   /* card surface           */
+  --card-2:     #fbf8f0;   /* lighter surface        */
+  --ink:        #38322a;   /* primary text           */
+  --ink-soft:   #8a8170;   /* secondary text         */
+  --line:       #e3d9c4;   /* hairlines / borders    */
+  --espresso:   #2f2a22;   /* dark "selected" pill    */
+  --accent:     #9a7b4f;   /* gold-brown accent      */
+  --booked:     #b4502f;   /* booked / important red */
+  --shadow:     0 8px 24px rgba(80, 66, 44, .10);
+  --radius:     22px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: #d8cdb6;
+  font-family: "Cormorant Garamond", "Noto Serif TC", Georgia, serif;
+  color: var(--ink);
+}
+
+/* Phone frame so it reads as an app on desktop, full-bleed on mobile */
+.phone {
+  position: relative;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px calc(96px + env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+@media (min-width: 480px) {
+  body { padding: 24px 0; }
+  .phone { min-height: calc(100vh - 48px); border-radius: 34px; box-shadow: 0 24px 60px rgba(60,48,30,.25); }
+}
+
+/* ============================== HEADER ================================= */
+.app-header { padding: 28px 4px 14px; position: relative; }
+.eyebrow {
+  font-style: italic;
+  letter-spacing: .14em;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+.app-title {
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  line-height: 1.05;
+  margin-top: 2px;
+}
+.app-title em { font-style: normal; font-size: 26px; color: var(--ink-soft); }
+.gear {
+  position: absolute; top: 30px; right: 4px;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--card-2);
+  font-size: 18px; color: var(--ink-soft); cursor: pointer;
+}
+
+/* ========================= DATE PILL STRIP ============================ */
+.date-strip {
+  display: flex; gap: 10px;
+  overflow-x: auto; padding: 6px 4px 10px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.date-strip::-webkit-scrollbar { display: none; }
+.pill {
+  scroll-snap-align: center;
+  flex: 0 0 auto;
+  width: 58px; padding: 12px 0 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease;
+}
+.pill .pdow  { font-style: italic; font-size: 13px; color: var(--ink-soft); letter-spacing: .05em; }
+.pill .pday  { font-size: 26px; font-weight: 600; line-height: 1.1; }
+.pill .pmon  { font-size: 11px; color: var(--ink-soft); letter-spacing: .1em; }
+.pill.active {
+  background: var(--espresso);
+  border-color: var(--espresso);
+  transform: translateY(-2px);
+}
+.pill.active .pdow,
+.pill.active .pmon { color: #cdbf9f; }
+.pill.active .pday { color: #fbf6ea; }
+
+/* progress rail under the dates */
+.day-track { display: flex; align-items: center; gap: 12px; padding: 4px 6px 0; }
+.track-arrow {
+  font-size: 22px; color: var(--ink-soft); cursor: pointer; user-select: none;
+  width: 22px; text-align: center;
+}
+.track-rail { flex: 1; height: 4px; background: var(--line); border-radius: 4px; position: relative; }
+.track-dot {
+  position: absolute; top: 50%; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--espresso); border: 3px solid var(--paper);
+  transform: translate(-50%, -50%); transition: left .3s ease; left: 0;
+}
+.day-counter {
+  text-align: center; font-style: italic; letter-spacing: .12em;
+  color: var(--ink-soft); font-size: 14px; padding: 8px 0 4px;
+}
+
+/* ============================== CONTENT =============================== */
+.content { flex: 1; padding-top: 6px; }
+.fade-in { animation: fade .35s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.section-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 4px 4px 12px;
+}
+.section-head h2 { font-size: 22px; font-weight: 600; }
+.section-head .more { font-size: 14px; color: var(--accent); font-style: italic; }
+
+/* generic card */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+/* ----- info banner (flights / hotel) ----- */
+.banner {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: 16px; padding: 14px 16px; margin-bottom: 16px;
+}
+.banner .b-ic { font-size: 18px; }
+.banner .b-tx { font-size: 16px; color: var(--ink); }
+.banner .b-tx small { display: block; color: var(--ink-soft); font-style: italic; }
+
+/* ----- weather chip ----- */
+.weather-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 15px; color: var(--ink-soft); font-style: italic;
+}
+.weather-chip b { color: var(--ink); font-style: normal; font-weight: 500; }
+
+/* ============================ TIMELINE =============================== */
+.part-group { margin-bottom: 6px; }
+.part-label {
+  font-style: italic; letter-spacing: .1em; text-transform: uppercase;
+  font-size: 13px; color: var(--accent); padding: 14px 4px 8px;
+}
+.t-item {
+  display: flex; gap: 14px; padding: 12px 16px; margin-bottom: 10px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 16px; box-shadow: var(--shadow);
+  cursor: pointer; transition: transform .15s ease;
+  align-items: flex-start;
+}
+.t-item:active { transform: scale(.99); }
+.t-time {
+  flex: 0 0 50px; font-size: 15px; font-weight: 600; color: var(--ink);
+  padding-top: 1px;
+}
+.t-time.empty { color: var(--line); }
+.t-body { flex: 1; }
+.t-title { font-size: 18px; line-height: 1.25; }
+.t-note { font-size: 14px; color: var(--ink-soft); font-style: italic; margin-top: 2px; }
+.t-tags { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px; border: 1px solid var(--line);
+  color: var(--ink-soft); background: var(--card-2);
+}
+.chip.booked { color: #fff; background: var(--booked); border-color: var(--booked); }
+.chip.hotel  { color: var(--accent); }
+.chip.car    { color: var(--accent); }
+.chip.tip    { color: var(--accent); }
+.t-go { color: var(--ink-soft); font-size: 18px; align-self: center; }
+
+/* ========================= HOME FEATURE GRID ========================= */
+.feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.feature {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 18px 16px 20px; cursor: pointer; min-height: 132px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  transition: transform .15s ease;
+}
+.feature:active { transform: scale(.98); }
+.feature .f-ic { font-size: 26px; }
+.feature .f-en { font-style: italic; color: var(--accent); font-size: 16px; }
+.feature .f-zh { font-size: 19px; font-weight: 600; margin-top: 2px; }
+.feature .f-sub { font-size: 13px; color: var(--ink-soft); margin-top: 4px; font-style: italic; }
+
+/* ============================ WALLET ================================ */
+.amount-row { display: flex; gap: 10px; margin-bottom: 14px; }
+.amount-row input {
+  flex: 1; font-family: inherit; font-size: 18px; color: var(--ink);
+  background: var(--card-2); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px 14px;
+}
+.amount-row input:focus { outline: none; border-color: var(--accent); }
+.convert-out { text-align: center; padding: 8px 0 4px; }
+.convert-out .big { font-size: 34px; font-weight: 600; }
+.convert-out .sub { color: var(--ink-soft); font-style: italic; }
+
+/* ============================ TABBAR ================================ */
+.tabbar {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 0;
+  width: 100%; max-width: 430px;
+  display: flex; justify-content: space-around; align-items: flex-end;
+  background: var(--card-2);
+  border-top: 1px solid var(--line);
+  padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
+  z-index: 20;
+}
+.tab {
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-family: inherit; font-size: 12px; color: var(--ink-soft);
+  flex: 1; padding-top: 4px;
+}
+.tab .ic { font-size: 19px; filter: grayscale(.3); }
+.tab.active { color: var(--ink); }
+.tab.home {
+  position: relative;
+}
+.tab.home .ic {
+  width: 56px; height: 56px; margin-top: -28px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--espresso); color: #fbf6ea; border-radius: 50%;
+  border: 4px solid var(--paper); font-size: 22px;
+  box-shadow: 0 6px 16px rgba(47,42,34,.4);
+}
+
+/* empty state */
+.empty { text-align: center; color: var(--ink-soft); font-style: italic; padding: 40px 20px; }
