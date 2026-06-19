@@ -62,6 +62,17 @@ const esc = s => (s == null ? "" : String(s).replace(/[&<>"]/g, c =>
 const mapUrl = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
 const weatherIcon = i => ({ "sun": "☀️", "cloud-rain": "🌦️", "cloud": "☁️" }[i] || "☀️");
 
+/* A representative location photo, keyed on the place name.
+   LoremFlickr serves keyword-matched Flickr photos with no API key. */
+function photoUrl(it, size = 160) {
+  const q = it.photo || it.map || it.title || "";
+  const kw = q.toLowerCase()
+    .replace(/[^a-z0-9 ]/g, " ")          // drop CJK / punctuation
+    .trim().split(/\s+/).slice(0, 3).join(",");
+  if (!kw) return "";
+  return `https://loremflickr.com/${size}/${size}/${kw}`;
+}
+
 /* ------------------------------------------------------------- header */
 function paintHeader() {
   $("#tagline").textContent   = TRIP.tagline;
@@ -103,6 +114,11 @@ function itemRow(it) {
   if (it.tag === "tip")   tags.push(`<span class="chip tip">💡 Tip</span>`);
 
   const clickable = !!it.map;
+  const photo = clickable ? photoUrl(it) : "";
+  const right = photo
+    ? `<img class="t-thumb" loading="lazy" alt="" src="${photo}"
+         onerror="this.classList.add('t-thumb--off')">`
+    : (clickable ? `<div class="t-go">›</div>` : "");
   return `<div class="t-item" ${clickable ? `data-map="${esc(it.map)}"` : ""}>
     <div class="t-time ${it.time ? "" : "empty"}">${it.time || "·"}</div>
     <div class="t-body">
@@ -110,7 +126,7 @@ function itemRow(it) {
       ${it.note ? `<div class="t-note">${esc(it.note)}</div>` : ""}
       ${tags.length ? `<div class="t-tags">${tags.join("")}</div>` : ""}
     </div>
-    ${clickable ? `<div class="t-go">›</div>` : ""}
+    ${right}
   </div>`;
 }
 
@@ -181,7 +197,7 @@ function viewHome() {
       <div class="feature" data-view="wallet">
         <div class="f-ic">💱</div>
         <div><div class="f-en">Wallet</div><div class="f-zh">匯率換算</div>
-          <div class="f-sub">AUD → 台幣</div></div>
+          <div class="f-sub">AUD → HKD · 即時匯率</div></div>
       </div>
       <div class="feature" data-view="saved">
         <div class="f-ic">🔖</div>
