@@ -1,10 +1,10 @@
 /* =========================================================================
-   Sydney Trip — itinerary data
-   Transcribed from the planning spreadsheet (20–27 June 2026)
-   Each day has an ordered list of items grouped by part of the day.
+   Sydney Trip — DEFAULT itinerary data (the template's seed values)
+   This is only the *starting point*. The in-app Editor saves your edits to
+   the browser (localStorage); Export here downloads a commit-ready data.js.
    ========================================================================= */
 
-const TRIP = {
+window.DEFAULT_TRIP = {
   title: "Sydney",
   subtitle: "雪梨之旅",
   tagline: "Buon Viaggio",
